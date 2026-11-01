@@ -1,0 +1,24 @@
+# Pila aislada para el smoke test: se combina con el docker-compose.yml del backend.
+#   docker compose -p soundpass-e2e -f <backend>/docker-compose.yml -f e2e/docker-compose.e2e.yml up -d --wait
+# Usa volúmenes propios (proyecto soundpass-e2e) y no publica puertos, así no choca con otras pilas.
+# Las credenciales son de un ADMIN desechable de esta pila de prueba, no de ningún entorno real.
+services:
+  app:
+    ports: !reset []
+    environment:
+      ADMIN_CORREO: ${E2E_ADMIN_CORREO:-admin.e2e@soundpass.test}
+      ADMIN_CONTRASENA: ${E2E_ADMIN_CONTRASENA:-e2e-solo-pruebas-123}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/actuator/health || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 40
+      start_period: 20s
+
+  web:
+    image: soundpass-frontend:local
+    environment:
+      API_UPSTREAM: http://app:8080
+    depends_on:
+      app:
+        condition: service_healthy
