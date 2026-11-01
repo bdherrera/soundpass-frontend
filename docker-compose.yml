@@ -1,0 +1,24 @@
+# Servicio opcional del frontend. Se une a la red del compose del backend (proyecto "soundpass")
+# para alcanzar al servicio `app` por nombre. Primero: `docker compose up -d` en el backend.
+name: soundpass-frontend
+
+services:
+  web:
+    build:
+      context: .
+      args:
+        VITE_API_URL: ${VITE_API_URL:-/api/v1}
+        VITE_MEDIA_URL: ${VITE_MEDIA_URL:-/media/}
+    image: soundpass-frontend:local
+    ports:
+      - "${WEB_PUERTO:-3000}:8080"
+    environment:
+      API_UPSTREAM: ${API_UPSTREAM:-http://app:8080}
+    networks:
+      - backend
+    restart: unless-stopped
+
+networks:
+  backend:
+    name: ${RED_BACKEND:-soundpass_default}
+    external: true
