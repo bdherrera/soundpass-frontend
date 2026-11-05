@@ -659,6 +659,7 @@ export interface components {
         };
         RegistroSolicitud: {
             nombre: string;
+            apellido: string;
             /** Format: email */
             correo: string;
             /** Format: password */
@@ -681,6 +682,7 @@ export interface components {
         Usuario: {
             idUsuario: number;
             nombre: string;
+            apellido: string;
             /** Format: email */
             correo: string;
             /** @enum {string} */
@@ -877,6 +879,7 @@ export interface components {
         };
         AsistenteEntrada: {
             nombre: string;
+            apellido: string;
             documento: string;
             /** Format: email */
             correo?: string;
