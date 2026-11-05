@@ -1,0 +1,15 @@
+name: soundpass-frontend-vm
+
+services:
+  web:
+    build:
+      context: .
+      args:
+        VITE_API_URL: ${VITE_API_URL:-/api/v1}
+        VITE_MEDIA_URL: ${VITE_MEDIA_URL:-/media/}
+    image: soundpass-frontend:local
+    ports:
+      - "${WEB_PUERTO:-80}:8080"
+    environment:
+      API_UPSTREAM: ${API_UPSTREAM:?Define API_UPSTREAM, p. ej. http://10.0.0.5:8080}
+    restart: unless-stopped
