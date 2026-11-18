@@ -10,7 +10,7 @@ import { erroresDeCampos, mensajeDeError } from '../../api/errores';
 import type { Entrada, EstadoEntrada } from '../../api/tipos';
 import { Aviso, Boton, Campo, EstadoConsulta, Insignia, Paginacion, Selector, Titulo } from '../../componentes/ui';
 import { CodigoQR } from '../../componentes/CodigoQR';
-import { fechaHora } from '../../lib/formato';
+import { fechaHora, nombreCompleto } from '../../lib/formato';
 
 // DISPONIBLE no aplica a las entradas de un usuario.
 const ESTADOS: EstadoEntrada[] = ['VENDIDA', 'USADA', 'CANCELADA'];
@@ -18,6 +18,7 @@ const ESTADOS: EstadoEntrada[] = ['VENDIDA', 'USADA', 'CANCELADA'];
 // Reglas de AsistenteEntrada en el OpenAPI.
 const esquemaAsistente = z.object({
   nombre: z.string().trim().min(1, 'Escribe el nombre').max(100, 'Máximo 100 caracteres'),
+  apellido: z.string().trim().min(1, 'Escribe el apellido').max(100, 'Máximo 100 caracteres'),
   documento: z.string().trim().min(1, 'Escribe el documento').max(30, 'Máximo 30 caracteres'),
   correo: z.union([z.literal(''), z.string().trim().email('Correo no válido').max(150, 'Máximo 150 caracteres')]),
 });
@@ -27,12 +28,13 @@ function FormularioAsistente({ entrada, alCerrar }: { entrada: Entrada; alCerrar
   const clienteQuery = useQueryClient();
   const { register, handleSubmit, formState, setError } = useForm<DatosAsistente>({
     resolver: zodResolver(esquemaAsistente),
-    defaultValues: { nombre: '', documento: '', correo: '' },
+    defaultValues: { nombre: '', apellido: '', documento: '', correo: '' },
   });
   const guardar = useMutation({
     mutationFn: (d: DatosAsistente) =>
       registrarAsistente(entrada.idEntrada, {
         nombre: d.nombre.trim(),
+        apellido: d.apellido.trim(),
         documento: d.documento.trim(),
         correo: d.correo.trim() || undefined,
       }),
@@ -49,7 +51,8 @@ function FormularioAsistente({ entrada, alCerrar }: { entrada: Entrada; alCerrar
 
   return (
     <form noValidate onSubmit={handleSubmit((d) => guardar.mutate(d))} className="mt-3 space-y-3 rounded-lg bg-slate-50 p-3" aria-label="Registrar asistente">
-      <Campo etiqueta="Nombre del asistente" autoComplete="name" error={formState.errors.nombre?.message} {...register('nombre')} />
+      <Campo etiqueta="Nombre del asistente" autoComplete="given-name" error={formState.errors.nombre?.message} {...register('nombre')} />
+      <Campo etiqueta="Apellido del asistente" autoComplete="family-name" error={formState.errors.apellido?.message} {...register('apellido')} />
       <Campo etiqueta="Documento" error={formState.errors.documento?.message} {...register('documento')} />
       <Campo etiqueta="Correo (opcional)" type="email" autoComplete="email" error={formState.errors.correo?.message} {...register('correo')} />
       {guardar.error && (
@@ -101,7 +104,7 @@ function TarjetaEntrada({ entrada }: { entrada: Entrada }) {
         {a ? (
           <dl className="grid grid-cols-[auto_1fr] gap-x-3 text-sm">
             <dt className="text-slate-600">Asistente</dt>
-            <dd>{a.nombre}</dd>
+            <dd>{nombreCompleto(a)}</dd>
             <dt className="text-slate-600">Documento</dt>
             <dd>{a.documento}</dd>
             {a.correo && (

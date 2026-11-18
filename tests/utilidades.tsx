@@ -35,7 +35,7 @@ export function tokenDePrueba(rol: 'USUARIO' | 'ADMIN' = 'USUARIO'): TokenRespue
     token: `token-${rol}`,
     tipo: 'Bearer',
     expiraEn: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
-    usuario: { idUsuario: 1, nombre: 'Ana', correo: 'ana@correo.co', rol },
+    usuario: { idUsuario: 1, nombre: 'Ana', apellido: 'Gómez', correo: 'ana@correo.co', rol },
   };
 }
 

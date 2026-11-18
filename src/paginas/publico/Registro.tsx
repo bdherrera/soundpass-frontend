@@ -11,6 +11,7 @@ import { Aviso, Boton, Campo, Tarjeta } from '../../componentes/ui';
 // Reglas de RegistroSolicitud en el OpenAPI.
 const esquemaRegistro = z.object({
   nombre: z.string().trim().min(1, 'Escribe tu nombre').max(100, 'Máximo 100 caracteres'),
+  apellido: z.string().trim().min(1, 'Escribe tu apellido').max(100, 'Máximo 100 caracteres'),
   correo: z.string().trim().min(1, 'Escribe tu correo').email('Correo no válido').max(150, 'Máximo 150 caracteres'),
   contrasena: z.string().min(8, 'Mínimo 8 caracteres').max(72, 'Máximo 72 caracteres'),
 });
@@ -46,11 +47,17 @@ export default function Registro() {
           className="space-y-4"
           onSubmit={handleSubmit((d) => {
             setErrorGeneral(null);
-            registro.mutate({ nombre: d.nombre.trim(), correo: d.correo.trim().toLowerCase(), contrasena: d.contrasena });
+            registro.mutate({
+              nombre: d.nombre.trim(),
+              apellido: d.apellido.trim(),
+              correo: d.correo.trim().toLowerCase(),
+              contrasena: d.contrasena,
+            });
           })}
         >
           {errorGeneral && <Aviso tipo="error">{errorGeneral}</Aviso>}
-          <Campo etiqueta="Nombre" autoComplete="name" error={formState.errors.nombre?.message} {...register('nombre')} />
+          <Campo etiqueta="Nombre" autoComplete="given-name" error={formState.errors.nombre?.message} {...register('nombre')} />
+          <Campo etiqueta="Apellido" autoComplete="family-name" error={formState.errors.apellido?.message} {...register('apellido')} />
           <Campo
             etiqueta="Correo"
             type="email"

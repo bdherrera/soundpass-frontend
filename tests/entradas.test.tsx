@@ -26,7 +26,16 @@ describe('mis entradas', () => {
         consultas.push(url.search);
         return {
           estado: 200,
-          cuerpo: pagina(url.searchParams.get('estado') === 'USADA' ? [] : [vendida, { ...vendida, idEntrada: 6, estado: 'USADA', codigo: 'a'.repeat(8) }]),
+          cuerpo: pagina(url.searchParams.get('estado') === 'USADA' ? [] : [
+                  vendida,
+                  {
+                    ...vendida,
+                    idEntrada: 6,
+                    estado: 'USADA',
+                    codigo: 'a'.repeat(8),
+                    asistente: { idEntrada: 6, nombre: 'Marta', apellido: 'Ríos', documento: '456' },
+                  },
+                ]),
         };
       }
       if (metodo === 'PUT' && url.pathname.endsWith('/entradas/5/asistente')) {
@@ -39,6 +48,7 @@ describe('mis entradas', () => {
     renderizarRutas([{ path: '/mis-entradas', element: <MisEntradas /> }], '/mis-entradas');
 
     expect(await screen.findByAltText(`Código QR de la entrada ${vendida.codigo}`)).toBeInTheDocument();
+    expect(screen.getByText('Marta Ríos')).toBeInTheDocument();
     // Solo la entrada VENDIDA ofrece registrar asistente
     const botones = screen.getAllByRole('button', { name: 'Registrar asistente' });
     expect(botones).toHaveLength(1);
@@ -46,12 +56,14 @@ describe('mis entradas', () => {
     await usuario.click(botones[0]);
     await usuario.click(screen.getByRole('button', { name: 'Guardar' }));
     expect(await screen.findByText('Escribe el nombre')).toBeInTheDocument();
+    expect(screen.getByText('Escribe el apellido')).toBeInTheDocument();
 
     await usuario.type(screen.getByLabelText('Nombre del asistente'), 'Luis');
+    await usuario.type(screen.getByLabelText('Apellido del asistente'), ' Pérez ');
     await usuario.type(screen.getByLabelText('Documento'), '123');
     await usuario.click(screen.getByRole('button', { name: 'Guardar' }));
     expect(await screen.findByText('Esta entrada ya tiene un asistente registrado.')).toBeInTheDocument();
-    expect(asistente).toEqual({ nombre: 'Luis', documento: '123' });
+    expect(asistente).toEqual({ nombre: 'Luis', apellido: 'Pérez', documento: '123' });
 
     // Las opciones del filtro no incluyen DISPONIBLE
     const filtro = screen.getByLabelText('Estado');

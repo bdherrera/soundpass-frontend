@@ -54,7 +54,8 @@ test('registro -> catálogo -> compra', async ({ page, request }) => {
 
   // Registro
   await page.goto('/registro');
-  await page.getByLabel('Nombre').fill('Usuaria Smoke');
+  await page.getByLabel('Nombre').fill('Usuaria');
+  await page.getByLabel('Apellido').fill('Smoke');
   await page.getByLabel('Correo').fill(correo);
   await page.getByLabel('Contraseña').fill(`clave-${marca}-segura`);
   await page.getByRole('button', { name: 'Crear cuenta' }).click();

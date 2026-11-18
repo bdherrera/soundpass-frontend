@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useSesion } from '../sesion/contexto';
 import { cerrarSesion } from '../sesion/sesion';
 import { useQueryClient } from '@tanstack/react-query';
+import { nombreCompleto } from '../lib/formato';
 
 const claseEnlace = ({ isActive }: { isActive: boolean }) =>
   `block rounded-md px-3 py-2 text-sm font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-white ${
@@ -64,7 +65,7 @@ export function Marco() {
             {usuario ? (
               <>
                 <span className="text-sm text-marca-50">
-                  {usuario.nombre}
+                  {nombreCompleto(usuario)}
                   {usuario.rol === 'ADMIN' && ' (admin)'}
                 </span>
                 <button onClick={salir} className="rounded-md bg-white/10 px-3 py-2 text-sm font-medium hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">
@@ -99,7 +100,7 @@ export function Marco() {
             {enlaces}
             {usuario ? (
               <button onClick={salir} className="block w-full rounded-md px-3 py-2 text-left text-sm font-medium text-marca-50 hover:bg-marca-800/60">
-                Cerrar sesión ({usuario.nombre})
+                Cerrar sesión ({nombreCompleto(usuario)})
               </button>
             ) : (
               <>

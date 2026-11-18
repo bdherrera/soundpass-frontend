@@ -10,6 +10,9 @@ export const fechaLarga = (iso: string) => fmtFecha.format(new Date(iso));
 export const hora = (iso: string) => fmtHora.format(new Date(iso));
 export const moneda = (valor: number) => fmtMoneda.format(valor);
 
+export const nombreCompleto = (p: { nombre?: string | null; apellido?: string | null }) =>
+  [p.nombre, p.apellido].map((s) => s?.trim()).filter(Boolean).join(' ');
+
 function dosDigitos(n: number) {
   return String(Math.abs(n)).padStart(2, '0');
 }
